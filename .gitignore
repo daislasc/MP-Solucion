@@ -30,4 +30,8 @@ Thumbs.db
 
 # Cursor
 .cursor/
+.cursorindexingignore
+
+# SpecStory (historial de conversaciones)
+.specstory/
 
