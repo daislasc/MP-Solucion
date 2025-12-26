@@ -167,13 +167,37 @@ class ReportWorkflow:
         self.start_time = time.time()
         self.steps = []
         
-        deadwh = DEADWHClient()
-        result = self._execute_step(
-            "Enviar Correos",
-            lambda: (*deadwh.enviar_reportes(es_prueba, reporte), {})
-        )
-        
-        return (result.success, result.mensaje)
+        try:
+            deadwh = DEADWHClient()
+            result = self._execute_step(
+                "Enviar Correos",
+                lambda: (*deadwh.enviar_reportes(es_prueba, reporte), {})
+            )
+            
+            if not result.success:
+                self._handle_error("Envío de Correos", result.mensaje)
+                return (False, result.mensaje)
+            
+            # === ÉXITO ===
+            tiempo_total = time.time() - self.start_time
+            logger.info("=" * 60)
+            logger.info(f"ENVÍO DE CORREOS COMPLETADO en {tiempo_total:.2f}s")
+            logger.info("=" * 60)
+            
+            # Enviar notificación de éxito
+            notifier = Notifier()
+            notifier.enviar_resumen_proceso(
+                exito=True,
+                pasos_ejecutados=[s.to_dict() for s in self.steps],
+                tiempo_total=tiempo_total
+            )
+            
+            return (True, f"Correos enviados exitosamente en {tiempo_total:.2f}s")
+            
+        except Exception as e:
+            logger.exception(f"Error inesperado en envío de correos: {e}")
+            self._handle_error("Error Inesperado", str(e))
+            return (False, str(e))
     
     def run_full(self) -> tuple[bool, str]:
         """
@@ -312,7 +336,23 @@ class ReportWorkflow:
     def _wrap_validacion(self, result: tuple) -> tuple[bool, str, dict]:
         """Convierte resultado de validar_extracto a formato (success, msg, dict)"""
         is_valid, message, last_updated = result
-        return (is_valid, message, {'last_updated': str(last_updated) if last_updated else None})
+        detalles = {}
+        
+        if last_updated:
+            # Convertir a hora local (Monterrey, México - UTC-6)
+            from datetime import timezone, timedelta
+            tz_monterrey = timezone(timedelta(hours=-6))  # CST (Central Standard Time)
+            
+            # Convertir UTC a hora local
+            last_updated_local = last_updated.astimezone(tz_monterrey)
+            
+            detalles = {
+                'last_updated_utc': str(last_updated),
+                'last_updated_local': last_updated_local.strftime('%Y-%m-%d %H:%M:%S %Z'),
+                'timezone': 'America/Monterrey (UTC-6)'
+            }
+        
+        return (is_valid, message, detalles)
     
     def _validar_inventario(self, client: InfoCentralClient) -> tuple[bool, str, dict]:
         """Valida inventario y retorna resultado estructurado"""

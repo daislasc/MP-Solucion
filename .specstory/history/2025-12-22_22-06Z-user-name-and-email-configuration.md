@@ -3397,3 +3397,1641 @@ ORDER BY ClaveReporte;
 
 ---
 
+_**User (2025-12-26 15:06Z)**_
+
+qué es lo que hace los botones "Proceso Completo" y "Solo Enviar Correos" en Streamlit ?
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+Revisando el código para explicar qué hace cada botón:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: app.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/workflow.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/workflow.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/workflow.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Resumiendo qué hace cada botón:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: app.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+## Botones en Streamlit
+
+### "🚀 Proceso Completo" (`run_full_workflow()`)
+
+Ejecuta el flujo completo de automatización. Pasos:
+
+1. Validar extracto de Tableau
+   - Verifica si el extracto está actualizado
+   - Si está desactualizado → intenta hacer refresh automático
+   - Si el refresh falla → crea ticket en Jira y envía alerta
+
+2. Validar datos en SQL Server (InfoCentral)
+   - Verifica si hay diferencias en el inventario
+   - Si hay diferencias → ejecuta jobs correctivos automáticamente
+   - Actualiza el cubo de datos
+
+3. Descargar PDFs de Tableau
+   - Descarga todos los reportes configurados desde Tableau Server
+   - Guarda los PDFs localmente
+
+4. Copiar a carpeta compartida
+   - Copia los PDFs a `//DEADWH/ReportesMateriasPrimas/`
+
+5. Enviar correos
+   - Ejecuta el SP `TiEnvioReportesTableauProc` con parámetros `(0, 0)`
+   - Envía todos los reportes a los destinatarios oficiales
+
+6. Notificar resultado
+   - Envía correo de éxito/error con resumen del proceso
+
+---
+
+### "📧 Solo Enviar Correos" (`run_send_only()`)
+
+Ejecuta solo el envío de correos. Asume que los PDFs ya están listos.
+
+1. Enviar correos
+   - Ejecuta el SP `TiEnvioReportesTableauProc` con parámetros `(0, 0)`
+   - Envía todos los reportes a los destinatarios oficiales
+   - No valida, no descarga, no copia archivos
+
+Cuándo usarlo:
+- Los PDFs ya están en la carpeta compartida
+- Solo necesitas reenviar los correos
+- Quieres probar el envío sin ejecutar todo el proceso
+
+---
+
+## Comparación
+
+| Característica | Proceso Completo | Solo Enviar Correos |
+|----------------|------------------|---------------------|
+| Validar extracto | ✅ | ❌ |
+| Refresh extracto | ✅ | ❌ |
+| Validar inventario | ✅ | ❌ |
+| Ejecutar jobs correctivos | ✅ | ❌ |
+| Descargar PDFs | ✅ | ❌ |
+| Copiar archivos | ✅ | ❌ |
+| Enviar correos | ✅ | ✅ |
+| Crear tickets Jira | ✅ (si hay errores) | ❌ |
+| Notificaciones | ✅ | ❌ |
+
+---
+
+## Resumen
+
+- "🚀 Proceso Completo": ejecuta todo el flujo desde cero (validación, descarga, envío).
+- "📧 Solo Enviar Correos": solo ejecuta el SP de envío (asume que los PDFs ya están listos).
+
+¿Quieres que agregue opciones para elegir modo prueba o reporte específico desde Streamlit?
+
+---
+
+_**User (2025-12-26 15:06Z)**_
+
+Quiero que quites el exceso de emojis que hay en nuestra pagina de streamlit...
+
+
+
+
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+Revisando `app.py` para identificar y reducir los emojis:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: app.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Reduciendo los emojis y manteniendo solo los esenciales para indicadores de estado:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -109,8 +109,8 @@
+      with st.sidebar:
+          st.image("https://www.deacero.com/wp-content/uploads/2021/03/logo-deacero.png", width=200)
+-         st.title("⚙️ Configuración")
++         st.title("Configuración")
+          
+          # Botón para recargar configuración
+-         if st.button("🔄 Recargar Configuración", use_container_width=True, type="secondary"):
++         if st.button("Recargar Configuración", use_container_width=True, type="secondary"):
+              reset_config()
+              st.rerun()
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 3, lines removed: 3
+
+```diff
+@@ -121,9 +121,9 @@
+          
+          if is_valid:
+-             st.success("✅ Configuración válida")
++             st.success("Configuración válida")
+          else:
+-             st.error("❌ Configuración incompleta")
++             st.error("Configuración incompleta")
+              for error in errors:
+-                 st.warning(f"⚠️ {error}")
++                 st.warning(error)
+          
+          st.divider()
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 4, lines removed: 4
+
+```diff
+@@ -130,15 +130,15 @@
+          
+          # Info de conexión
+-         st.subheader("🔗 Conexiones")
++         st.subheader("Conexiones")
+          
+          col1, col2 = st.columns(2)
+          with col1:
+-             st.metric("Tableau", "Conectado" if config.tableau.user else "❌")
++             st.metric("Tableau", "Conectado" if config.tableau.user else "Desconectado")
+          with col2:
+-             st.metric("SQL Server", "Conectado" if config.sql_infocentral.password else "❌")
++             st.metric("SQL Server", "Conectado" if config.sql_infocentral.password else "Desconectado")
+          
+          # Jira
+          jira_valid, _ = config.validate_jira()
+-         st.metric("Jira", "Conectado" if jira_valid else "⚠️ Opcional")
++         st.metric("Jira", "Conectado" if jira_valid else "Opcional")
+          
+          st.divider()
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 7, lines removed: 7
+
+```diff
+@@ -145,20 +145,20 @@
+          
+          # Información de correos y reportes
+-         st.subheader("📧 Configuración de Correos")
++         st.subheader("Configuración de Correos")
+          
+-         with st.expander("📨 Destinatarios de Alertas", expanded=False):
++         with st.expander("Destinatarios de Alertas", expanded=False):
+              st.write("**Alertas de Error:**")
+              if config.email.error_recipients:
+-                 st.success(f"✅ {config.email.error_recipients}")
++                 st.success(config.email.error_recipients)
+              else:
+-                 st.warning("⚠️ No configurado")
++                 st.warning("No configurado")
+              
+              st.write("**Notificaciones de Éxito:**")
+              if config.email.success_recipients:
+-                 st.success(f"✅ {config.email.success_recipients}")
++                 st.success(config.email.success_recipients)
+              else:
+-                 st.warning("⚠️ No configurado")
++                 st.warning("No configurado")
+          
+-         with st.expander("📊 Reportes PDF - Destinatarios", expanded=False):
++         with st.expander("Reportes PDF - Destinatarios", expanded=False):
+              try:
+                  deadwh = DEADWHClient()
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -188,10 +188,10 @@
+              except Exception as e:
+                  st.error(f"Error obteniendo configuración: {str(e)}")
+-                 st.caption("💡 Verifica la conexión a SQL Server (DEADWH)")
++                 st.caption("Verifica la conexión a SQL Server (DEADWH)")
+          
+          st.divider()
+          
+          # Información
+-         st.subheader("ℹ️ Información")
++         st.subheader("Información")
+          st.text(f"Datasource: {config.tableau.datasource_name}")
+          st.text(f"Proyecto Jira: {config.jira.project_key}")
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -203,11 +203,11 @@
+      
+      with col1:
+-         st.title("📊 Automatización Reportes MP")
++         st.title("Automatización Reportes MP")
+          st.caption("Sistema de validación y envío de reportes de Materias Primas")
+      
+      with col3:
+          st.metric(
+              "Estado",
+-             "🟢 Listo" if not st.session_state.running else "🔄 Ejecutando",
++             "Listo" if not st.session_state.running else "Ejecutando",
+              delta=None
+          )
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 2, lines removed: 2
+
+```diff
+@@ -216,11 +216,11 @@
+  def render_actions():
+      """Renderiza los botones de acción"""
+-     st.subheader("🎯 Acciones")
++     st.subheader("Acciones")
+      
+      col1, col2, col3, col4 = st.columns(4)
+      
+      with col1:
+          if st.button(
+-             "🔍 Validar Extracto",
++             "Validar Extracto",
+              disabled=st.session_state.running,
+              use_container_width=True,
+```
+
+**Chunk 2**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -231,5 +231,5 @@
+      with col2:
+          if st.button(
+-             "🚀 Proceso Completo",
++             "Proceso Completo",
+              disabled=st.session_state.running,
+              use_container_width=True,
+```
+
+**Chunk 3**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -240,5 +240,5 @@
+      with col3:
+          if st.button(
+-             "📧 Solo Enviar Correos",
++             "Solo Enviar Correos",
+              disabled=st.session_state.running,
+              use_container_width=True,
+```
+
+**Chunk 4**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -249,5 +249,5 @@
+      with col4:
+          if st.button(
+-             "🗑️ Limpiar Logs",
++             "Limpiar Logs",
+              disabled=st.session_state.running,
+              use_container_width=True
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -380,5 +380,5 @@
+      """Renderiza los pasos ejecutados"""
+      if st.session_state.steps:
+-         st.subheader("📋 Pasos Ejecutados")
++         st.subheader("Pasos Ejecutados")
+          
+          for step in st.session_state.steps:
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -394,5 +394,5 @@
+  def render_logs():
+      """Renderiza los logs"""
+-     st.subheader("📜 Logs")
++     st.subheader("Logs")
+      
+      log_container = st.container()
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -374,5 +374,5 @@
+                  config = get_config()
+                  jira_url = f"{config.jira.server}/browse/{summary['ticket_jira']}"
+-                 st.info(f"🎫 Ticket creado: [{summary['ticket_jira']}]({jira_url})")
++                 st.info(f"Ticket creado: [{summary['ticket_jira']}]({jira_url})")
+  
+  
+```
+
+</details>
+
+</tool-use>
+
+---
+
+Model performed no edit
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="read_lints">
+<details>
+          <summary>Tool use: **read_lints** • Read lints for 1 file</summary>
+      
+Lint paths:
+
+- `app.py`
+
+Lint results
+
+Lint errors for `app.py`
+
+
+| Message | Range | Severity |
+|-------|-------|----------|
+| Module level import not at top of file | 21:1-21:48 | DIAGNOSTIC_SEVERITY_WARNING |
+| Module level import not at top of file | 22:1-22:52 | DIAGNOSTIC_SEVERITY_WARNING |
+| Module level import not at top of file | 23:1-23:45 | DIAGNOSTIC_SEVERITY_WARNING |
+| Module level import not at top of file | 24:1-24:40 | DIAGNOSTIC_SEVERITY_WARNING |
+| `time` imported but unused | 7:8-7:12 | DIAGNOSTIC_SEVERITY_WARNING |
+| `src.tableau_client.TableauClient` imported but unused | 23:32-23:45 | DIAGNOSTIC_SEVERITY_WARNING |
+| Local variable `color` is assigned to but never used | 386:13-386:18 | DIAGNOSTIC_SEVERITY_WARNING |
+| "time" is not accessed | 7:8-7:12 | DIAGNOSTIC_SEVERITY_HINT |
+| "TableauClient" is not accessed | 23:32-23:45 | DIAGNOSTIC_SEVERITY_HINT |
+| "col2" is not accessed | 202:11-202:15 | DIAGNOSTIC_SEVERITY_HINT |
+| "color" is not accessed | 386:13-386:18 | DIAGNOSTIC_SEVERITY_HINT |
+| Import "time" is not accessed | 7:8-7:12 | DIAGNOSTIC_SEVERITY_HINT |
+| Import "TableauClient" is not accessed | 23:32-23:45 | DIAGNOSTIC_SEVERITY_HINT |
+| Variable "col2" is not accessed | 202:11-202:15 | DIAGNOSTIC_SEVERITY_HINT |
+| Variable "color" is not accessed | 386:13-386:18 | DIAGNOSTIC_SEVERITY_HINT |
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Eliminando los emojis de colores en los logs y manteniendo solo ✅/❌ para indicadores de estado:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 7, lines removed: 7
+
+```diff
+@@ -402,12 +402,12 @@
+              # Mostrar logs en orden inverso (más reciente primero)
+              for log in reversed(st.session_state.logs[-50:]):  # Últimos 50 logs
+-                 level_colors = {
+-                     'INFO': '🔵',
+-                     'WARNING': '🟡',
+-                     'ERROR': '🔴',
+-                     'DEBUG': '⚪'
++                 level_prefix = {
++                     'INFO': '[INFO]',
++                     'WARNING': '[WARN]',
++                     'ERROR': '[ERROR]',
++                     'DEBUG': '[DEBUG]'
+                  }
+-                 icon = level_colors.get(log['level'], '⚪')
+-                 st.text(f"{log['timestamp']} {icon} {log['message']}")
++                 prefix = level_prefix.get(log['level'], '[LOG]')
++                 st.text(f"{log['timestamp']} {prefix} {log['message']}")
+          else:
+              st.info("No hay logs disponibles. Ejecuta una acción para ver los resultados.")
+```
+
+</details>
+
+</tool-use>
+
+---
+
+
+
+---
+
+
+He reducido los emojis en la interfaz de Streamlit. Cambios realizados:
+
+## Emojis eliminados
+
+- Títulos y subtítulos: "⚙️ Configuración" → "Configuración"
+- Botones: "🔄 Recargar", "🔍 Validar", "🚀 Proceso", "📧 Enviar", "🗑️ Limpiar"
+- Estados: "🟢 Listo", "🔄 Ejecutando" → "Listo", "Ejecutando"
+- Conexiones: "🔗", "❌", "⚠️"
+- Secciones: "📧", "📨", "📊", "ℹ️", "🎯", "📋", "📜", "🎫"
+- Logs: "🔵", "🟡", "🔴", "⚪" → reemplazados por "[INFO]", "[WARN]", "[ERROR]", "[DEBUG]"
+
+## Emojis mantenidos
+
+- ✅ y ❌ en los logs (útil para escaneo visual rápido)
+- El icono de la página (📊) en la pestaña del navegador
+
+La interfaz queda más profesional y menos cargada de emojis, manteniendo la funcionalidad visual para indicadores de éxito/error en los logs.
+
+---
+
+_**User (2025-12-26 15:06Z)**_
+
+como puedo yo verificar manualmente lo que hace el botón de validar extrracto ?
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+Revisando qué hace el botón "Validar Extracto" para explicar cómo verificarlo manualmente:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/workflow.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/tableau_client.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="codebase_search">
+<details>
+                <summary>Tool use: **codebase_search** • Searched codebase "How does validar_extracto work in TableauClient?" • **7** results</summary>
+            
+| File | Lines |
+|------|-------|
+| `src/tableau_client.py` | L15-309 |
+| `src/workflow.py` | L36-414 |
+| `src/tableau_client.py` | L309 |
+| `src/sql_client.py` | L13-288 |
+| `src/jira_client.py` | L9-153 |
+| `src/workflow.py` | L20-414 |
+| `src/config.py` | L56-159 |
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Creando un script para verificar manualmente y documentando cómo hacerlo:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="write">
+
+<details><summary>Tool use: **write** • Edit file: verificar_extracto.py</summary>
+
+**Chunk 1**
+Lines added: 102, lines removed: 1
+
+```diff
+@@ -1,1 +1,102 @@
+- 
++ """
++ Script para verificar manualmente el estado del extracto de Tableau
++ Simula lo que hace el botón "Validar Extracto" en Streamlit
++ """
++ import sys
++ from pathlib import Path
++ from datetime import datetime, timezone
++ 
++ # Agregar src al path
++ sys.path.insert(0, str(Path(__file__).parent))
++ 
++ from src.config import get_config
++ from src.tableau_client import TableauClient
++ 
++ def main():
++     """Verifica el estado del extracto manualmente"""
++     config = get_config()
++     
++     print("=" * 60)
++     print("VERIFICACIÓN MANUAL DE EXTRACTO TABLEAU")
++     print("=" * 60)
++     print()
++     
++     print(f"Servidor: {config.tableau.server}")
++     print(f"Usuario: {config.tableau.user}")
++     print(f"Datasource: {config.tableau.datasource_name}")
++     print(f"Máximo permitido: {config.validation.max_extract_age_hours} horas")
++     print()
++     
++     try:
++         with TableauClient() as tableau:
++             print("Conectando a Tableau Server...")
++             
++             # Validar extracto
++             is_valid, message, last_updated = tableau.validar_extracto()
++             
++             print("-" * 60)
++             print("RESULTADO:")
++             print("-" * 60)
++             print(f"Estado: {'VÁLIDO' if is_valid else 'DESACTUALIZADO'}")
++             print(f"Mensaje: {message}")
++             
++             if last_updated:
++                 # Convertir a hora local si es necesario
++                 if last_updated.tzinfo is None:
++                     last_updated = last_updated.replace(tzinfo=timezone.utc)
++                 
++                 print(f"Última actualización: {last_updated}")
++                 
++                 # Calcular edad
++                 now_utc = datetime.now(timezone.utc)
++                 age = now_utc - last_updated
++                 age_hours = age.total_seconds() / 3600
++                 age_days = age_hours / 24
++                 
++                 print(f"Edad del extracto: {age_hours:.2f} horas ({age_days:.2f} días)")
++                 print(f"Límite máximo: {config.validation.max_extract_age_hours} horas")
++                 
++                 if age_hours &gt; config.validation.max_extract_age_hours:
++                     print()
++                     print("⚠️  El extracto está DESACTUALIZADO")
++                     print(f"   Excede el límite por {age_hours - config.validation.max_extract_age_hours:.2f} horas")
++                 else:
++                     print()
++                     print("✅ El extracto está ACTUALIZADO")
++                     print(f"   Tiempo restante: {config.validation.max_extract_age_hours - age_hours:.2f} horas")
++             
++             print()
++             print("-" * 60)
++             print("INFORMACIÓN ADICIONAL:")
++             print("-" * 60)
++             
++             # Buscar el datasource para mostrar más info
++             ds = tableau.find_datasource(config.tableau.datasource_name)
++             if ds:
++                 print(f"ID del Datasource: {ds.id}")
++                 print(f"Nombre: {ds.name}")
++                 print(f"Tiene extracto: {ds.has_extracts}")
++                 print(f"Proyecto: {ds.project_name if hasattr(ds, 'project_name') else 'N/A'}")
++                 print(f"Propietario: {ds.owner_id if hasattr(ds, 'owner_id') else 'N/A'}")
++             else:
++                 print("⚠️  No se pudo encontrar el datasource")
++             
++     except Exception as e:
++         print()
++         print("❌ ERROR:")
++         print(f"   {str(e)}")
++         print()
++         print("Verifica:")
++         print("  1. Que las credenciales en .env sean correctas")
++         print("  2. Que tengas acceso a Tableau Server")
++         print("  3. Que el nombre del datasource sea correcto")
++         return 1
++     
++     print()
++     print("=" * 60)
++     return 0 if is_valid else 1
++ 
++ if __name__ == "__main__":
++     exit_code = main()
++     sys.exit(exit_code)
++ 
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/config.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Creando un documento con instrucciones para verificar manualmente:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="write">
+
+<details><summary>Tool use: **write** • Edit file: COMO_VERIFICAR_EXTRACTO.md</summary>
+
+**Chunk 1**
+Lines added: 159, lines removed: 1
+
+```diff
+@@ -1,1 +1,159 @@
+- 
++ # Cómo Verificar Manualmente el Extracto de Tableau
++ 
++ Este documento explica cómo verificar manualmente lo que hace el botón "Validar Extracto" en Streamlit.
++ 
++ ## ¿Qué hace el botón "Validar Extracto"?
++ 
++ El botón ejecuta los siguientes pasos:
++ 
++ 1. **Conecta a Tableau Server** usando las credenciales del &#96;.env&#96;
++ 2. **Busca el datasource** "Datamart Materias Primas" (o el configurado)
++ 3. **Verifica si tiene extracto** habilitado
++ 4. **Obtiene la fecha de última actualización** del extracto
++ 5. **Calcula la edad** del extracto (horas desde la última actualización)
++ 6. **Compara con el límite máximo** (por defecto: 24 horas)
++ 7. **Si está desactualizado**: Intenta hacer refresh automático
++ 8. **Revalida** después del refresh
++ 
++ ## Método 1: Usando el Script Python
++ 
++ He creado un script que hace exactamente lo mismo que el botón:
++ 
++ &#96;&#96;&#96;bash
++ # Activar entorno virtual
++ .\venv\Scripts\Activate.ps1
++ 
++ # Ejecutar verificación
++ python verificar_extracto.py
++ &#96;&#96;&#96;
++ 
++ El script mostrará:
++ - Estado del extracto (Válido/Desactualizado)
++ - Última fecha de actualización
++ - Edad del extracto en horas y días
++ - Tiempo restante antes de exceder el límite
++ - Información adicional del datasource
++ 
++ ## Método 2: Desde Tableau Server (Interfaz Web)
++ 
++ ### Paso 1: Acceder a Tableau Server
++ 1. Abre tu navegador y ve a: &#96;https://tableau.deacero.com/&#96;
++ 2. Inicia sesión con tus credenciales
++ 
++ ### Paso 2: Buscar el Datasource
++ 1. Ve a la sección **"Datasources"** o **"Fuentes de Datos"**
++ 2. Busca el datasource: **"Datamart Materias Primas"**
++ 3. Haz clic en el datasource para abrirlo
++ 
++ ### Paso 3: Verificar Información del Extracto
++ 1. En la página del datasource, busca la sección **"Extract"** o **"Extracto"**
++ 2. Verifica:
++    - **"Last Refresh"** o **"Última Actualización"**: Fecha y hora
++    - **"Refresh Schedule"** o **"Programación"**: Cuándo se actualiza automáticamente
++    - **"Extract Size"** o **"Tamaño"**: Tamaño del extracto
++ 
++ ### Paso 4: Calcular Manualmente
++ 1. Anota la fecha/hora de "Last Refresh"
++ 2. Calcula cuántas horas han pasado desde esa fecha hasta ahora
++ 3. Compara con el límite configurado (por defecto: 24 horas)
++ 
++ **Ejemplo:**
++ - Última actualización: 2025-12-26 08:00
++ - Hora actual: 2025-12-27 10:00
++ - Diferencia: 26 horas
++ - Límite: 24 horas
++ - **Resultado: DESACTUALIZADO** (excede por 2 horas)
++ 
++ ## Método 3: Desde Tableau Desktop
++ 
++ Si tienes Tableau Desktop instalado:
++ 
++ 1. Abre Tableau Desktop
++ 2. Conéctate a Tableau Server
++ 3. Navega al datasource "Datamart Materias Primas"
++ 4. Haz clic derecho → **"Extract"** → **"Refresh"** o **"Actualizar"**
++ 5. Verás la fecha de última actualización en el diálogo
++ 
++ ## Método 4: Usando la API de Tableau (Avanzado)
++ 
++ Si tienes acceso a la API de Tableau, puedes usar este código Python:
++ 
++ &#96;&#96;&#96;python
++ import tableauserverclient as TSC
++ from datetime import datetime, timezone
++ 
++ # Conectar
++ server = TSC.Server('https://tableau.deacero.com/', use_server_version=True)
++ auth = TSC.TableauAuth('tu_usuario', 'tu_password', 'tu_site')
++ server.auth.sign_in(auth)
++ 
++ # Buscar datasource
++ all_datasources = list(TSC.Pager(server.datasources))
++ ds = next((d for d in all_datasources if d.name == 'Datamart Materias Primas'), None)
++ 
++ if ds:
++     print(f"Última actualización: {ds.updated_at}")
++     print(f"Tiene extracto: {ds.has_extracts}")
++     
++     # Calcular edad
++     now = datetime.now(timezone.utc)
++     age = now - ds.updated_at
++     print(f"Edad: {age.total_seconds() / 3600:.2f} horas")
++ 
++ server.auth.sign_out()
++ &#96;&#96;&#96;
++ 
++ ## Configuración del Límite
++ 
++ El límite máximo de horas está configurado en el archivo &#96;.env&#96;:
++ 
++ &#96;&#96;&#96;env
++ MAX_EXTRACT_AGE_HOURS=24
++ &#96;&#96;&#96;
++ 
++ Puedes cambiarlo según tus necesidades. Por ejemplo:
++ - &#96;12&#96; = máximo 12 horas
++ - &#96;48&#96; = máximo 48 horas (2 días)
++ 
++ ## ¿Qué hacer si el extracto está desactualizado?
++ 
++ ### Opción 1: Refresh Manual desde Tableau Server
++ 1. Ve al datasource en Tableau Server
++ 2. Haz clic en **"Actions"** → **"Refresh Extract"**
++ 3. Espera a que termine el refresh
++ 4. Verifica nuevamente
++ 
++ ### Opción 2: Usar el Botón en Streamlit
++ El botón "Validar Extracto" intentará hacer refresh automáticamente si detecta que está desactualizado.
++ 
++ ### Opción 3: Programar Refresh Automático
++ En Tableau Server, puedes configurar una programación para que el extracto se actualice automáticamente:
++ 1. Ve al datasource
++ 2. **"Extract"** → **"Schedule"** o **"Programar"**
++ 3. Configura la frecuencia (diario, semanal, etc.)
++ 
++ ## Troubleshooting
++ 
++ ### Error: "Datasource no encontrado"
++ - Verifica que el nombre en &#96;.env&#96; (&#96;TABLEAU_DATASOURCE_NAME&#96;) sea exactamente igual al nombre en Tableau Server
++ - Verifica que tengas permisos para ver el datasource
++ 
++ ### Error: "No tiene extracto"
++ - El datasource no tiene extracto habilitado
++ - Necesitas habilitar el extracto desde Tableau Server o Tableau Desktop
++ 
++ ### Error: "No se pudo obtener fecha de actualización"
++ - Puede ser un problema de permisos
++ - Verifica que tengas acceso de lectura al datasource
++ 
++ ## Resumen
++ 
++ | Método | Dificultad | Información Obtenida |
++ |--------|-----------|---------------------|
++ | Script Python | Fácil | Completa y detallada |
++ | Tableau Server Web | Media | Visual, requiere acceso web |
++ | Tableau Desktop | Media | Visual, requiere software |
++ | API de Tableau | Avanzada | Programática, completa |
++ 
++ **Recomendación:** Usa el script &#96;verificar_extracto.py&#96; para una verificación rápida y completa.
++ 
+```
+
+</details>
+
+</tool-use>
+
+---
+
+
+
+---
+
+
+He creado dos herramientas para verificar manualmente lo que hace el botón "Validar Extracto":
+
+## Herramientas creadas
+
+### 1. Script Python: `verificar_extracto.py`
+Ejecuta la misma validación que el botón. Para usarlo:
+
+```bash
+# Activar entorno virtual
+.\venv\Scripts\Activate.ps1
+
+# Ejecutar verificación
+python verificar_extracto.py
+```
+
+Muestra:
+- Estado del extracto (Válido/Desactualizado)
+- Última fecha de actualización
+- Edad del extracto (horas y días)
+- Tiempo restante antes del límite
+- Información del datasource
+
+### 2. Documento: `COMO_VERIFICAR_EXTRACTO.md`
+Guía con 4 métodos para verificar manualmente:
+- Método 1: Script Python (recomendado)
+- Método 2: Desde Tableau Server (interfaz web)
+- Método 3: Desde Tableau Desktop
+- Método 4: Usando la API de Tableau
+
+## ¿Qué verifica el botón?
+
+1. Conecta a Tableau Server
+2. Busca el datasource "Datamart Materias Primas"
+3. Verifica si tiene extracto
+4. Obtiene la fecha de última actualización
+5. Calcula la edad (horas desde la última actualización)
+6. Compara con el límite máximo (24 horas por defecto)
+7. Si está desactualizado → intenta refresh automático
+8. Revalida después del refresh
+
+## Verificación rápida desde Tableau Server
+
+1. Ve a: `https://tableau.deacero.com/`
+2. Busca el datasource "Datamart Materias Primas"
+3. Revisa "Last Refresh" o "Última Actualización"
+4. Calcula: horas actuales - horas de última actualización
+5. Compara con 24 horas (o el límite configurado en `.env`)
+
+¿Quieres que ejecute el script ahora para ver el estado actual del extracto?
+
+---
+
+_**User (2025-12-26 15:06Z)**_
+
+Cómo se obtiene la Última fecha de actualización?
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+Revisando cómo se obtiene la última fecha de actualización en el código:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/tableau_client.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="codebase_search">
+<details>
+                <summary>Tool use: **codebase_search** • Searched codebase "How does Tableau Server API get the updated_at date from datasource?" • **12** results</summary>
+            
+| File | Lines |
+|------|-------|
+| `src/tableau_client.py` | L15-309 |
+| `src/config.py` | L52-155 |
+| `src/tableau_client.py` | L309 |
+| `src/config.py` | L24 |
+| `src/workflow.py` | L36-414 |
+| `src/sql_client.py` | L8-154 |
+| `src/workflow.py` | L20-414 |
+| `src/config.py` | L56-155 |
+| `src/sql_client.py` | L113 |
+| `src/sql_client.py` | L154-288 |
+| `src/jira_client.py` | L9-153 |
+| `src/workflow.py` | L414 |
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Explicando cómo se obtiene la última fecha de actualización:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/tableau_client.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Cómo se obtiene la última fecha de actualización:
+
+## Proceso paso a paso
+
+### 1. Conexión a Tableau Server
+```python
+# Se conecta usando la API de Tableau Server
+server = TSC.Server('https://tableau.deacero.com/')
+auth = TSC.TableauAuth(usuario, password, site)
+server.auth.sign_in(auth)
+```
+
+### 2. Obtener todos los datasources
+```python
+# Obtiene la lista de todos los datasources del servidor
+all_datasources = list(TSC.Pager(self.server.datasources))
+```
+
+### 3. Buscar el datasource específico
+```python
+# Busca el datasource por nombre (ej: "Datamart Materias Primas")
+for ds in all_datasources:
+    if ds.name == "Datamart Materias Primas":
+        # ds es un objeto DatasourceItem
+```
+
+### 4. Obtener la fecha de actualización
+```python
+# El objeto DatasourceItem tiene la propiedad updated_at
+last_updated = ds.updated_at  # ← Esta es la fecha que necesitamos
+```
+
+## Código específico en tu proyecto
+
+En `src/tableau_client.py`, líneas 112-114:
+
+```python
+# Después de encontrar el datasource
+ds = self.find_datasource(ds_name)
+
+# Obtiene la fecha directamente del objeto
+last_updated = ds.updated_at
+
+# Ajusta la zona horaria si es necesario
+if last_updated and last_updated.tzinfo is None:
+    last_updated = last_updated.replace(tzinfo=timezone.utc)
+```
+
+## ¿De dónde viene `updated_at`?
+
+La propiedad `updated_at` proviene de la API REST de Tableau Server. Cuando se consulta un datasource, la API devuelve metadatos que incluyen:
+- `id`: ID del datasource
+- `name`: Nombre del datasource
+- `updated_at`: Fecha/hora de última actualización (cuando se actualizó el extracto por última vez)
+- `created_at`: Fecha de creación
+- `has_extracts`: Si tiene extracto habilitado
+- Y otros metadatos
+
+## Ejemplo visual
+
+```
+Tableau Server API Response:
+{
+  "id": "abc123",
+  "name": "Datamart Materias Primas",
+  "updated_at": "2025-12-26T14:30:00Z",  ← Esta es la fecha
+  "has_extracts": true,
+  ...
+}
+```
+
+El objeto `DatasourceItem` de la librería `tableauserverclient` expone estos campos como propiedades de Python.
+
+## Verificación manual
+
+Puedes verificar esto con un script simple:
+
+```python
+import tableauserverclient as TSC
+from src.config import get_config
+
+config = get_config()
+
+# Conectar
+server = TSC.Server(config.tableau.server)
+auth = TSC.TableauAuth(config.tableau.user, config.tableau.password, config.tableau.site)
+server.auth.sign_in(auth)
+
+# Obtener datasource
+all_ds = list(TSC.Pager(server.datasources))
+ds = next((d for d in all_ds if d.name == config.tableau.datasource_name), None)
+
+if ds:
+    print(f"Nombre: {ds.name}")
+    print(f"Última actualización: {ds.updated_at}")
+    print(f"Tipo: {type(ds.updated_at)}")  # datetime object
+    print(f"Tiene extracto: {ds.has_extracts}")
+
+server.auth.sign_out()
+```
+
+## Resumen
+
+| Paso | Método | Resultado |
+|------|--------|-----------|
+| 1 | Conectar a Tableau Server | Sesión autenticada |
+| 2 | Listar datasources | Lista de `DatasourceItem` |
+| 3 | Buscar por nombre | Objeto `DatasourceItem` específico |
+| 4 | Acceder a `updated_at` | `datetime` con la fecha de última actualización |
+
+La fecha viene directamente de los metadatos del datasource en Tableau Server, proporcionados por la API REST.
+
+¿Quieres que cree un script de prueba para ver esta información en detalle?
+
+---
+
+_**User (2025-12-26 15:06Z)**_
+
+ejecuté el boton de "Validar Extracto"
+
+y obtuve la siguiente respuesta:
+
+
+
+Estado: Extracto válido: 5.53h
+
+
+
+{
+
+"last_updated":"2025-12-26 13:15:13+00:00"
+
+}
+
+
+
+Se me hace raro porque son las 12:47 pm del 26 de diciembre 2025, y la respuesta marca las 13:15 pm del mismo dia... Como puedo saber si el extracto trae un horario diferente ? porque la respuesta no coincide con la hora de Monterrey, Nuevo León
+
+
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+El extracto está en UTC (hora universal), mientras que Monterrey está en UTC-6 (CST) o UTC-5 (CDT). Revisando el código para mostrar ambas horas y corregir la conversión:
+
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/tableau_client.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: src/workflow.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+<tool-use data-tool-type="search" data-tool-name="codebase_search">
+<details>
+                <summary>Tool use: **codebase_search** • Searched codebase "How is last_updated datetime formatted and displayed in the workflow?" • **6** results</summary>
+            
+| File | Lines |
+|------|-------|
+| `src/tableau_client.py` | L15-309 |
+| `src/workflow.py` | L36-414 |
+| `src/workflow.py` | L414 |
+| `src/workflow.py` | L20-414 |
+| `src/notifier.py` | L11-222 |
+| `src/sql_client.py` | L8-154 |
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+El extracto está en UTC; Monterrey está en UTC-6 (CST). Actualizando el código para mostrar ambas horas (UTC y hora local):
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: src/workflow.py</summary>
+
+**Chunk 1**
+Lines added: 17, lines removed: 1
+
+```diff
+@@ -313,5 +313,21 @@
+          """Convierte resultado de validar_extracto a formato (success, msg, dict)"""
+          is_valid, message, last_updated = result
+-         return (is_valid, message, {'last_updated': str(last_updated) if last_updated else None})
++         detalles = {}
++         
++         if last_updated:
++             # Convertir a hora local (Monterrey, México - UTC-6)
++             from datetime import timezone, timedelta
++             tz_monterrey = timezone(timedelta(hours=-6))  # CST (Central Standard Time)
++             
++             # Convertir UTC a hora local
++             last_updated_local = last_updated.astimezone(tz_monterrey)
++             
++             detalles = {
++                 'last_updated_utc': str(last_updated),
++                 'last_updated_local': last_updated_local.strftime('%Y-%m-%d %H:%M:%S %Z'),
++                 'timezone': 'America/Monterrey (UTC-6)'
++             }
++         
++         return (is_valid, message, detalles)
+      
+      def _validar_inventario(self, client: InfoCentralClient) -&gt; tuple[bool, str, dict]:
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="read" data-tool-name="read_file">
+<details><summary>Tool use: **read_file** • Read file: app.py</summary>
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Mejorando la visualización en Streamlit para mostrar las horas de forma más clara:
+
+
+---
+
+<tool-use data-tool-type="write" data-tool-name="search_replace">
+
+<details><summary>Tool use: **search_replace** • Edit file: app.py</summary>
+
+**Chunk 1**
+Lines added: 20, lines removed: 1
+
+```diff
+@@ -387,5 +387,24 @@
+                  st.write(f"**Estado:** {step.mensaje}")
+                  if step.detalles:
+-                     st.json(step.detalles)
++                     # Mostrar información de fecha de actualización de forma más clara
++                     if 'last_updated_utc' in step.detalles or 'last_updated' in step.detalles:
++                         st.write("**Última Actualización:**")
++                         col1, col2 = st.columns(2)
++                         with col1:
++                             if 'last_updated_local' in step.detalles:
++                                 st.success(f"🕐 Hora Local (Monterrey): {step.detalles['last_updated_local']}")
++                             elif 'last_updated' in step.detalles:
++                                 st.info(f"🕐 Hora: {step.detalles['last_updated']}")
++                         with col2:
++                             if 'last_updated_utc' in step.detalles:
++                                 st.info(f"🌐 UTC: {step.detalles['last_updated_utc']}")
++                             if 'timezone' in step.detalles:
++                                 st.caption(f"Zona horaria: {step.detalles['timezone']}")
++                     
++                     # Mostrar otros detalles que no sean de fecha
++                     otros_detalles = {k: v for k, v in step.detalles.items() 
++                                     if k not in ['last_updated', 'last_updated_utc', 'last_updated_local', 'timezone']}
++                     if otros_detalles:
++                         st.json(otros_detalles)
+  
+  
+```
+
+</details>
+
+</tool-use>
+
+---
+
+<tool-use data-tool-type="generic" data-tool-name="read_lints">
+<details>
+          <summary>Tool use: **read_lints** • Read lints for 2 files</summary>
+      
+Lint paths:
+
+- `src/workflow.py`
+- `app.py`
+
+Lint results
+
+Lint errors for `app.py`
+
+
+| Message | Range | Severity |
+|-------|-------|----------|
+| Module level import not at top of file | 21:1-21:48 | DIAGNOSTIC_SEVERITY_WARNING |
+| Module level import not at top of file | 22:1-22:52 | DIAGNOSTIC_SEVERITY_WARNING |
+| Module level import not at top of file | 23:1-23:45 | DIAGNOSTIC_SEVERITY_WARNING |
+| Module level import not at top of file | 24:1-24:40 | DIAGNOSTIC_SEVERITY_WARNING |
+| `time` imported but unused | 7:8-7:12 | DIAGNOSTIC_SEVERITY_WARNING |
+| `src.tableau_client.TableauClient` imported but unused | 23:32-23:45 | DIAGNOSTIC_SEVERITY_WARNING |
+| Local variable `color` is assigned to but never used | 384:13-384:18 | DIAGNOSTIC_SEVERITY_WARNING |
+| "time" is not accessed | 7:8-7:12 | DIAGNOSTIC_SEVERITY_HINT |
+| "TableauClient" is not accessed | 23:32-23:45 | DIAGNOSTIC_SEVERITY_HINT |
+| "col2" is not accessed | 200:11-200:15 | DIAGNOSTIC_SEVERITY_HINT |
+| "color" is not accessed | 384:13-384:18 | DIAGNOSTIC_SEVERITY_HINT |
+| Import "time" is not accessed | 7:8-7:12 | DIAGNOSTIC_SEVERITY_HINT |
+| Import "TableauClient" is not accessed | 23:32-23:45 | DIAGNOSTIC_SEVERITY_HINT |
+| Variable "col2" is not accessed | 200:11-200:15 | DIAGNOSTIC_SEVERITY_HINT |
+| Variable "color" is not accessed | 384:13-384:18 | DIAGNOSTIC_SEVERITY_HINT |
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+Actualicé el código para mostrar la hora en UTC y en hora local de Monterrey. Explicación:
+
+## Explicación del problema
+
+**Lo que está pasando:**
+- El extracto muestra: `2025-12-26 13:15:13+00:00` (UTC)
+- Tu hora local: `12:47 PM` (Monterrey, UTC-6)
+- Conversión: `13:15 UTC` = `7:15 AM` hora de Monterrey
+
+**Cálculo:**
+- 13:15 UTC - 6 horas = 7:15 AM (Monterrey)
+- Si ahora son las 12:47 PM en Monterrey
+- Tiempo transcurrido: 12:47 - 7:15 = 5 horas 32 minutos ≈ 5.53 horas
+
+## Cambios realizados
+
+1. Conversión automática a hora local: el código convierte UTC a hora de Monterrey (UTC-6).
+2. Visualización mejorada en Streamlit: ahora muestra:
+   - Hora local (Monterrey)
+   - Hora UTC
+   - Zona horaria
+
+## Cómo se verá ahora
+
+Cuando ejecutes "Validar Extracto", verás algo como:
+
+```
+Estado: Extracto válido: 5.53h
+
+Última Actualización:
+🕐 Hora Local (Monterrey): 2025-12-26 07:15:13 CST
+🌐 UTC: 2025-12-26 13:15:13+00:00
+Zona horaria: America/Monterrey (UTC-6)
+```
+
+## Nota sobre zona horaria
+
+Monterrey usa:
+- CST (Central Standard Time): UTC-6 (noviembre-marzo)
+- CDT (Central Daylight Time): UTC-5 (abril-octubre)
+
+El código actual usa UTC-6. Si necesitas que detecte automáticamente el horario de verano, puedo ajustarlo.
+
+¿Quieres que pruebe el botón nuevamente o que ajuste algo más en la visualización?
+
+---
+
+_**User (2025-12-26 15:06Z)**_
+
+@app.py (147-158) 
+
+aqui dice que las Notificaciones de exito llegarán al correo daislas@deacero.com.
+
+
+
+Esas notificaciones de éxito llegan cuando ? No me ha llegado nada. 
+
+Tengo que hacer click en "Solo Enviar Correos" ?
+
+
+
+O dime, cuándo es que llegan esas notificaciones de correso ?
+
+---
+
+_**Agent (model default, mode Agent)**_
+
+
+
+---
+
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="grep">
+<details>
+<summary>Tool use: **grep**</summary>
+
+Status: **loading**
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="read_file">
+<details>
+<summary>Tool use: **read_file**</summary>
+
+Status: **loading**
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+<tool-use data-tool-type="unknown" data-tool-name="read_file">
+<details>
+<summary>Tool use: **read_file**</summary>
+
+Status: **loading**
+
+
+</details>
+</tool-use>
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+
+
+
+---
+

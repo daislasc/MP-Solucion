@@ -27,7 +27,6 @@ from src.sql_client import DEADWHClient
 # Configuración de la página
 st.set_page_config(
     page_title="Reportes MP - Automatización",
-    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -107,7 +106,6 @@ def on_step_complete(result: StepResult):
 def render_sidebar():
     """Renderiza la barra lateral"""
     with st.sidebar:
-        st.image("https://www.deacero.com/wp-content/uploads/2021/03/logo-deacero.png", width=200)
         st.title("⚙️ Configuración")
         
         # Botón para recargar configuración
@@ -202,7 +200,7 @@ def render_header():
     col1, col2, col3 = st.columns([2, 1, 1])
     
     with col1:
-        st.title("📊 Automatización Reportes MP")
+        st.title("Automatización Reportes MP")
         st.caption("Sistema de validación y envío de reportes de Materias Primas")
     
     with col3:
@@ -215,7 +213,7 @@ def render_header():
 
 def render_actions():
     """Renderiza los botones de acción"""
-    st.subheader("🎯 Acciones")
+    st.subheader("Acciones")
     
     col1, col2, col3, col4 = st.columns(4)
     
@@ -379,7 +377,7 @@ def render_status():
 def render_steps():
     """Renderiza los pasos ejecutados"""
     if st.session_state.steps:
-        st.subheader("📋 Pasos Ejecutados")
+        st.subheader("Pasos Ejecutados")
         
         for step in st.session_state.steps:
             icon = "✅" if step.success else "❌"
@@ -388,12 +386,31 @@ def render_steps():
             with st.expander(f"{icon} {step.nombre} ({step.duracion:.2f}s)", expanded=not step.success):
                 st.write(f"**Estado:** {step.mensaje}")
                 if step.detalles:
-                    st.json(step.detalles)
+                    # Mostrar información de fecha de actualización de forma más clara
+                    if 'last_updated_utc' in step.detalles or 'last_updated' in step.detalles:
+                        st.write("**Última Actualización:**")
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            if 'last_updated_local' in step.detalles:
+                                st.success(f"🕐 Hora Local (Monterrey): {step.detalles['last_updated_local']}")
+                            elif 'last_updated' in step.detalles:
+                                st.info(f"🕐 Hora: {step.detalles['last_updated']}")
+                        with col2:
+                            if 'last_updated_utc' in step.detalles:
+                                st.info(f"🌐 UTC: {step.detalles['last_updated_utc']}")
+                            if 'timezone' in step.detalles:
+                                st.caption(f"Zona horaria: {step.detalles['timezone']}")
+                    
+                    # Mostrar otros detalles que no sean de fecha
+                    otros_detalles = {k: v for k, v in step.detalles.items() 
+                                    if k not in ['last_updated', 'last_updated_utc', 'last_updated_local', 'timezone']}
+                    if otros_detalles:
+                        st.json(otros_detalles)
 
 
 def render_logs():
     """Renderiza los logs"""
-    st.subheader("📜 Logs")
+    st.subheader("Logs")
     
     log_container = st.container()
     
