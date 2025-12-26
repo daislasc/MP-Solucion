@@ -18,9 +18,10 @@ logging.basicConfig(
 # Agregar src al path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from src.config import get_config
+from src.config import get_config, reset_config
 from src.workflow import ReportWorkflow, StepResult
 from src.tableau_client import TableauClient
+from src.sql_client import DEADWHClient
 
 
 # Configuración de la página
@@ -109,6 +110,11 @@ def render_sidebar():
         st.image("https://www.deacero.com/wp-content/uploads/2021/03/logo-deacero.png", width=200)
         st.title("⚙️ Configuración")
         
+        # Botón para recargar configuración
+        if st.button("🔄 Recargar Configuración", use_container_width=True, type="secondary"):
+            reset_config()
+            st.rerun()
+        
         # Estado de configuración
         config = get_config()
         is_valid, errors = config.validate()
@@ -134,6 +140,54 @@ def render_sidebar():
         # Jira
         jira_valid, _ = config.validate_jira()
         st.metric("Jira", "Conectado" if jira_valid else "⚠️ Opcional")
+        
+        st.divider()
+        
+        # Información de correos y reportes
+        st.subheader("📧 Configuración de Correos")
+        
+        with st.expander("📨 Destinatarios de Alertas", expanded=False):
+            st.write("**Alertas de Error:**")
+            if config.email.error_recipients:
+                st.success(f"✅ {config.email.error_recipients}")
+            else:
+                st.warning("⚠️ No configurado")
+            
+            st.write("**Notificaciones de Éxito:**")
+            if config.email.success_recipients:
+                st.success(f"✅ {config.email.success_recipients}")
+            else:
+                st.warning("⚠️ No configurado")
+        
+        with st.expander("📊 Reportes PDF - Destinatarios", expanded=False):
+            try:
+                deadwh = DEADWHClient()
+                reportes = deadwh.obtener_configuracion_reportes()
+                
+                if reportes:
+                    st.write(f"**Total de reportes configurados:** {len(reportes)}")
+                    
+                    # Mostrar tabla de reportes
+                    import pandas as pd
+                    df_reportes = pd.DataFrame(reportes)
+                    st.dataframe(
+                        df_reportes[['ClaReporte', 'NombreReporte', 'Para', 'CC', 'CorreoPrueba']],
+                        use_container_width=True,
+                        hide_index=True
+                    )
+                    
+                    # Mostrar todos los destinatarios únicos
+                    destinatarios = deadwh.obtener_todos_destinatarios()
+                    if destinatarios:
+                        st.write(f"**Destinatarios únicos:** {len(destinatarios)}")
+                        st.text(", ".join(destinatarios[:10]))  # Mostrar primeros 10
+                        if len(destinatarios) > 10:
+                            st.caption(f"... y {len(destinatarios) - 10} más")
+                else:
+                    st.info("No se pudo obtener la configuración de reportes")
+            except Exception as e:
+                st.error(f"Error obteniendo configuración: {str(e)}")
+                st.caption("💡 Verifica la conexión a SQL Server (DEADWH)")
         
         st.divider()
         

@@ -185,6 +185,108 @@ class DEADWHClient(SQLClient):
         except Exception as e:
             logger.error(f"Error enviando reportes: {e}")
             return (False, str(e))
+    
+    def obtener_configuracion_reportes(self) -> list[dict]:
+        """
+        Obtiene la configuración de todos los reportes desde TiTraEnvioReportesTableau.
+        
+        Returns:
+            list[dict]: Lista de reportes con su configuración
+        """
+        logger.info("Obteniendo configuración de reportes...")
+        
+        try:
+            result = self.execute_query("""
+                SELECT 
+                    ClaReporte,
+                    NombreReporte,
+                    Para,
+                    CC,
+                    CorreoPrueba
+                FROM dbo.TiTraEnvioReportesTableau
+                ORDER BY ClaReporte
+            """)
+            logger.info(f"Configuración de {len(result)} reportes obtenida")
+            return result
+        except Exception as e:
+            logger.error(f"Error obteniendo configuración de reportes: {e}")
+            return []
+    
+    def obtener_destinatarios_reporte(self, clave_reporte: int) -> dict:
+        """
+        Obtiene los destinatarios de un reporte específico.
+        
+        Args:
+            clave_reporte: Clave del reporte
+        
+        Returns:
+            dict: Configuración del reporte
+        """
+        logger.info(f"Obteniendo destinatarios del reporte {clave_reporte}...")
+        
+        try:
+            result = self.execute_query("""
+                SELECT 
+                    ClaReporte,
+                    NombreReporte,
+                    Para,
+                    CC,
+                    CorreoPrueba
+                FROM dbo.TiTraEnvioReportesTableau
+                WHERE ClaReporte = %s
+            """, (clave_reporte,))
+            
+            if result:
+                return result[0]
+            return {}
+        except Exception as e:
+            logger.error(f"Error obteniendo destinatarios: {e}")
+            return {}
+    
+    def obtener_todos_destinatarios(self) -> list[str]:
+        """
+        Obtiene todos los correos únicos que reciben reportes.
+        
+        Returns:
+            list[str]: Lista de correos únicos
+        """
+        logger.info("Obteniendo todos los destinatarios...")
+        
+        try:
+            result = self.execute_query("""
+                SELECT DISTINCT Para as Correo
+                FROM dbo.TiTraEnvioReportesTableau
+                WHERE Para IS NOT NULL AND Para != ''
+                UNION
+                SELECT DISTINCT CC as Correo
+                FROM dbo.TiTraEnvioReportesTableau
+                WHERE CC IS NOT NULL AND BCC != ''
+                UNION
+                SELECT DISTINCT BCC as Correo
+                FROM dbo.TiTraEnvioReportesTableau
+                WHERE BCC IS NOT NULL AND BCC != ''
+                UNION
+                SELECT DISTINCT CorreoPrueba as Correo
+                FROM dbo.TiTraEnvioReportesTableau
+                WHERE CorreoPrueba IS NOT NULL AND CorreoPrueba != ''
+                ORDER BY Correo
+            """)
+            
+            # Extraer correos y dividir si están separados por ; o ,
+            correos = []
+            for row in result:
+                correo_str = row.get('Correo', '')
+                if correo_str:
+                    # Dividir por ; o , y limpiar espacios
+                    correos_split = [c.strip() for c in correo_str.replace(';', ',').split(',')]
+                    correos.extend([c for c in correos_split if c and '@' in c])
+            
+            correos_unicos = sorted(list(set(correos)))
+            logger.info(f"Encontrados {len(correos_unicos)} destinatarios únicos")
+            return correos_unicos
+        except Exception as e:
+            logger.error(f"Error obteniendo destinatarios: {e}")
+            return []
 
 
 class CubosOfiClient(SQLClient):

@@ -61,8 +61,10 @@ class Config:
     """Configuración centralizada de la aplicación"""
     
     def __init__(self):
-        # Cargar .env
-        load_dotenv()
+        # Cargar .env desde el directorio raíz del proyecto
+        import pathlib
+        env_path = pathlib.Path(__file__).parent.parent / '.env'
+        load_dotenv(dotenv_path=env_path)
         
         # Tableau
         self.tableau = TableauConfig(
@@ -165,3 +167,8 @@ def get_config() -> Config:
         _config = Config()
     return _config
 
+
+def reset_config():
+    """Resetea el singleton de configuración para forzar recarga"""
+    global _config
+    _config = None

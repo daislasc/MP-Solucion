@@ -32,8 +32,15 @@ cd DEAC-79072
 
 ```bash
 # Windows
-python -m venv venv
-venv\Scripts\activate
+py -m venv venv
+
+# Activar entorno virtual
+.\venv\Scripts\Activate.ps1
+
+# Si tienes problemas con la política de ejecución de PowerShell:
+# 1. Abre PowerShell como Administrador
+# 2. Ejecuta: Set-ExecutionPolicy Unrestricted
+# 3. Luego podrás activar el entorno virtual normalmente
 
 # Linux/Mac
 python3 -m venv venv
@@ -45,6 +52,8 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+**Nota:** Asegúrate de tener el entorno virtual activado antes de instalar dependencias o ejecutar la aplicación.
 
 ### 4. Configurar variables de entorno
 
@@ -76,7 +85,14 @@ JIRA_API_TOKEN=tu_token
 
 ### Interfaz Web (Streamlit)
 
+**Importante:** Asegúrate de tener el entorno virtual activado antes de ejecutar Streamlit.
+
 ```bash
+# Activar entorno virtual (si no está activado)
+.\venv\Scripts\Activate.ps1
+
+# Verificar que está activado (deberías ver "(venv)" en el prompt)
+# Ejecutar Streamlit
 streamlit run app.py
 ```
 
