@@ -89,7 +89,7 @@ JIRA_API_TOKEN=tu_token
 
 ```bash
 # Activar entorno virtual (si no está activado)
-.\venv\Scripts\Activate.ps1
+venv/Scripts/activate
 
 # Verificar que está activado (deberías ver "(venv)" en el prompt)
 # Ejecutar Streamlit
