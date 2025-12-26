@@ -548,37 +548,3 @@ pip install -r requirements.txt
 3. Revisa los logs en `logs/workflow_YYYYMMDD.log`
 4. Verifica la configuración de Database Mail en SQL Server
 
-## 📞 Soporte
-
-### Contactos
-
-- **Problemas con Tableau Server**: Contactar a Javier Osvaldo Aguila Cantu
-- **Problemas con SQL Server**: Contactar al administrador de base de datos
-- **Problemas con el sistema**: Crear ticket en proyecto DDF (Jira)
-
-### Información Útil para Reportar Problemas
-
-Cuando reportes un problema, incluye:
-
-1. **Logs**: Archivo `logs/workflow_YYYYMMDD.log`
-2. **Configuración**: (sin credenciales) qué variables están configuradas
-3. **Error específico**: Mensaje de error completo
-4. **Pasos para reproducir**: Qué acción ejecutaste
-5. **Fecha y hora**: Cuándo ocurrió el problema
-
-## 📜 Changelog
-
-### v1.0.0 (2024-12-22)
-- ✅ Versión inicial
-- ✅ Integración de scripts existentes
-- ✅ Nueva interfaz Streamlit
-- ✅ Integración con Jira
-- ✅ Sistema de notificaciones por correo
-- ✅ Validación automática de extractos
-- ✅ Refresh automático de extractos desactualizados
-
----
-
-**Desarrollado por el Equipo de Datos y Analítica - DEACERO**
-
-Para más información, consulta la documentación en el repositorio o contacta al equipo de soporte.
