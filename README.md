@@ -206,7 +206,7 @@ La interfaz web es la forma más fácil de usar el sistema.
 
 ```bash
 # 1. Activar entorno virtual (si no está activado)
-.\venv\Scripts\Activate.ps1  # Windows
+venv\Scripts\activate # Windows
 # o
 source venv/bin/activate     # Linux/Mac
 
